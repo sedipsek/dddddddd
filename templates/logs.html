@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}실시간 로그 | {{ brand }}{% endblock %}
+
+{% block content %}
+<section class="card large">
+  <div class="toolbar">
+    <div class="left">
+      <h1>실시간 로그</h1>
+      <span class="badge">SSE</span>
+    </div>
+    <div class="right">
+      <input id="search" class="input" placeholder="검색…" />
+      <label class="toggle"><input id="autoscroll" type="checkbox" checked /> 자동스크롤</label>
+      <button id="copy" class="btn">복사</button>
+      <a href="{{ url_for('logout') }}" class="btn danger" style="text-decoration:none;">로그아웃</a>
+    </div>
+  </div>
+
+  <!-- 상태 표시는 JS가 #status를 자동 생성하지만, 명시적으로 넣고 싶다면 아래 div 사용 -->
+  <div id="status"></div>
+
+  <div class="log-wrap">
+    <pre id="log-pre">{% for line in logs %}{{ line }}{% endfor %}</pre>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  setupLogs({
+    preSelector: "#log-pre",
+    searchSelector: "#search",
+    autoscrollSelector: "#autoscroll",
+    copySelector: "#copy",
+    sseUrl: "/stream-logs"
+  });
+</script>
+{% endblock %}
