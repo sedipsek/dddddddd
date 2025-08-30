@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}로그인 | 로그 시스템{% endblock %}
+
+{% block content %}
+<section class="card">
+  <header class="card-header">
+    <h1>OTP 로그인</h1>
+    <p class="muted">Iris에서 발급받은 6자리 코드를 입력하세요.</p>
+  </header>
+
+  <form method="POST" class="form" id="otp-form">
+    <!-- OTP 6칸 입력 UI -->
+    <div class="otp-grid" data-otp-length="6">
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-box" />
+    </div>
+
+    <!-- 실제 제출 값은 hidden 에 합쳐 넣음 -->
+    <input type="hidden" name="otp" id="otp-hidden" />
+
+    <div class="actions">
+      <button type="submit" class="btn primary">로그인</button>
+    </div>
+
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <p class="helper">
+      코드가 없나요? Iris 개인톡에서 <code>/로그otp발급 30초</code> 명령으로 발급하세요.
+    </p>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // OTP 6칸 입력 결합 및 UX
+  setupOtpInputs({
+    gridSelector: ".otp-grid",
+    boxSelector: ".otp-box",
+    hiddenSelector: "#otp-hidden",
+    formSelector: "#otp-form",
+  });
+</script>
+{% endblock %}
