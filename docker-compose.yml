@@ -1,0 +1,61 @@
+# docker-compose.yml
+version: "3.9"
+
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      # 기본 라우팅/포트
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      # http -> https 리다이렉트
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      # Let’s Encrypt (HTTP-01)
+      - --certificatesResolvers.le.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesResolvers.le.acme.storage=/acme.json
+      - --certificatesResolvers.le.acme.httpChallenge.entryPoint=web
+      # (선택) 로그 레벨
+      # - --log.level=INFO
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/acme.json:/acme.json"
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: chickenmu-web
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=production
+    # server.log / otp_store.json만 개별 매핑해서 영속화 (디렉터리 전체를 덮지 않음)
+    volumes:
+      - ./data/server.log:/app/server.log
+      - ./data/otp_store.json:/app/otp_store.json
+    labels:
+      - "traefik.enable=true"
+      # 호스트 라우팅
+      - "traefik.http.routers.chickenmu.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.chickenmu.entrypoints=websecure"
+      - "traefik.http.routers.chickenmu.tls.certresolver=le"
+      # 백엔드 포트
+      - "traefik.http.services.chickenmu.loadbalancer.server.port=5000"
+      # SSE 캐시 방지 헤더
+      - "traefik.http.middlewares.nocache.headers.customResponseHeaders.Cache-Control=no-cache"
+      - "traefik.http.routers.chickenmu.middlewares=nocache@docker"
+
+      # (선택) /ingest 를 Paper 서버 IP만 허용하고 싶다면 아래 3줄 사용:
+      # - "traefik.http.middlewares.ingest-allow.ipwhitelist.sourcerange=${PAPER_PUBLIC_IP}/32"
+      # - "traefik.http.routers.chickenmu-ingest.rule=Host(`${DOMAIN}`) && Path(`/ingest`)"
+      # - "traefik.http.routers.chickenmu-ingest.middlewares=ingest-allow@docker,nocache@docker"
+
+    depends_on:
+      - traefik
+    restart: unless-stopped
