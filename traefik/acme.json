@@ -1,0 +1,7 @@
+mkdir -p /opt/chickenmu/traefik
+cd /opt/chickenmu/traefik
+sudo touch acme.json
+sudo chmod 600 acme.json
+
+# 앱 데이터(로그/OTP) 폴더
+mkdir -p /opt/chickenmu/data
