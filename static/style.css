@@ -1,0 +1,149 @@
+/* ===== Theme & Sizes ===== */
+:root{
+  --bg1:#0f172a; /* slate-900 */
+  --bg2:#1e293b; /* slate-800 */
+  --card:rgba(255,255,255,0.08);
+  --stroke:rgba(255,255,255,0.18);
+  --ring:rgba(59,130,246,.6);
+  --text:#e5e7eb; /* gray-200 */
+  --muted:#9ca3af; /* gray-400 */
+  --primary:#60a5fa; /* blue-400 */
+  --danger:#ef4444;
+
+  /* OTP box sizes */
+  --otp-size: 56px;  /* width/height per digit */
+  --otp-gap: 10px;   /* gap between digits */
+}
+
+/* ===== Reset ===== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; color:var(--text); background:var(--bg1);
+  font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== Animated Gradient Background ===== */
+.bg{position:fixed; inset:0; overflow:hidden; z-index:-1}
+.bg-layer{
+  position:absolute; inset:-20%;
+  background:
+    radial-gradient(60% 60% at 20% 30%, #4f46e5 0%, transparent 60%),
+    radial-gradient(50% 50% at 80% 20%, #22d3ee 0%, transparent 60%),
+    radial-gradient(60% 60% at 50% 80%, #f43f5e 0%, transparent 60%);
+  filter: blur(60px) saturate(120%);
+  animation: float 18s linear infinite alternate;
+  opacity:.6;
+}
+.bg-layer.delayed{animation-delay:-9s; opacity:.45}
+@keyframes float{
+  from{transform:translate3d(-2%,-2%,0) scale(1.05)}
+  to{transform:translate3d(2%,2%,0) scale(1.1)}
+}
+
+/* ===== Layout ===== */
+.container{
+  min-height:100%;
+  display:grid; place-items:center;
+  padding:24px;
+}
+
+.card{
+  width:min(720px, 92vw);
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:24px;
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.card.large{width:min(1100px, 96vw)}
+
+.card-header h1{margin:0 0 8px}
+.muted{color:var(--muted)}
+
+/* ===== Forms & Controls ===== */
+.form{margin-top:12px}
+.actions{margin-top:14px; display:flex; gap:8px}
+
+.btn{
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,0.06);
+  color:var(--text);
+  padding:10px 14px; border-radius:12px;
+  cursor:pointer; transition:filter .15s ease, background .15s ease;
+}
+.btn:hover{background:rgba(255,255,255,0.12)}
+.btn.primary{border-color:transparent; background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.danger{border-color:transparent; background:linear-gradient(135deg,#ef4444,#f97316); color:#fff}
+
+.input{
+  background:rgba(255,255,255,0.08);
+  border:1px solid var(--stroke);
+  color:var(--text);
+  padding:10px 12px; border-radius:12px;
+  outline:none; min-width:220px;
+}
+.input:focus{box-shadow:0 0 0 4px var(--ring)}
+
+.error{margin-top:12px; color:#fecaca}
+.helper{margin-top:10px; color:var(--muted)}
+code{background:rgba(0,0,0,.35); padding:2px 6px; border-radius:6px}
+
+/* ===== OTP Grid (fixed width boxes) ===== */
+.otp-grid{
+  display:grid;
+  grid-template-columns: repeat(6, var(--otp-size)); /* fixed width per cell */
+  gap: var(--otp-gap);
+  justify-content:center;   /* center the grid block */
+  justify-items:center;     /* prevent children from stretching */
+  align-items:center;
+  margin:20px 0 6px;
+}
+.otp-box{
+  width:var(--otp-size);
+  height:var(--otp-size);
+  font-size:28px;
+  text-align:center;
+  padding:0;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,0.08);
+  color:var(--text);
+  outline:none;
+}
+.otp-box:focus{box-shadow:0 0 0 4px var(--ring)}
+
+/* ===== Toolbar / Logs ===== */
+.toolbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;
+}
+.toolbar .left{display:flex; align-items:center; gap:10px}
+.toolbar h1{margin:0}
+.badge{
+  font-size:12px; padding:4px 8px; border-radius:999px;
+  background:rgba(255,255,255,.1); border:1px solid var(--stroke);
+  color:var(--muted);
+}
+.toolbar .right{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+
+.toggle{display:inline-flex; align-items:center; gap:6px}
+.toggle input{accent-color:var(--primary)}
+
+.log-wrap{
+  border:1px solid var(--stroke);
+  border-radius:12px; background:rgba(0,0,0,.35);
+  max-height:70vh; overflow:auto;
+}
+pre{
+  margin:0; padding:16px; white-space:pre-wrap; word-break:break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px){
+  :root{ --otp-size:44px; --otp-gap:8px }
+  .input{min-width:unset; width:100%}
+  .toolbar .right{width:100%}
+}
